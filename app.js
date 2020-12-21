@@ -10,15 +10,12 @@ class HTTPError extends Error {
   }
 }
 
-const WEBHOOK_ID = '3250f68e-6a99-4802-8614-033a0ec6eeef'
+const WEBHOOK_ID = '98531cec-600c-44b2-b87a-267c007b59c7'
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET
 const GITHUB_SECRET = process.env.GITHUB_SECRET || ''
-const GITEA_SECRET = process.env.GITEA_SECRET
 
 const channelIDs = {
-  '#t/S/logs': '0fd85b8f-b48d-44c8-b2b9-cddd54b1e8a4',
-  '#t/S/l/issue': 'ec627454-291e-4114-a995-379630d2fe0a',
-  '#t/S/l/pr': 'ee715867-d978-447b-a4fd-95071b1dbcef'
+  '#p/2/t/logs': '962b94cb-2971-4246-aba0-cd4d05a718a8'
 }
 
 const verifyBody = (signature, body) => {
@@ -66,14 +63,8 @@ exports.webhook = async (req, res) => {
   const body = req.body
   const event = headers['x-github-event']
 
-  if (headers['x-gitea-delivery']) {
-    if (body.secret !== GITEA_SECRET) {
-      throw new HTTPError(403, 'Secret mis-match')
-    }
-  } else {
-    if (!verifyBody(headers['x-hub-signature'] || '', body)) {
-      throw new HTTPError(403, 'X-Hub-Signature mis-match')
-    }
+  if (!verifyBody(headers['x-hub-signature'] || '', body)) {
+    throw new HTTPError(403, 'X-Hub-Signature mis-match')
   }
 
   if (
@@ -94,7 +85,7 @@ PR作成者: [${user.login}](${user.html_url})
 ---
 ` + content
 
-    await sendMessage(channelIDs['#t/S/logs'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'issues' && body.action === 'opened') {
     const issue = body.issue
@@ -110,7 +101,7 @@ issue作成者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/issue'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'issues' && body.aciton === 'edited') {
     const issue = body.issue
@@ -124,7 +115,7 @@ issue編集者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/issue'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'issues' && body.action === 'closed') {
     const issue = body.issue
@@ -138,7 +129,7 @@ issueを閉じた人: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/issue'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'issues' && body.action === 'reopened') {
     const issue = body.issue
@@ -154,7 +145,7 @@ issueを開けた人: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/issue'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'issue_comment' && body.action === 'created') {
     const issue = body.issue
@@ -171,7 +162,7 @@ issueを開けた人: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/issue'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'issue_comment' && body.action === 'edited') {
     const issue = body.issue
@@ -188,7 +179,7 @@ issueを開けた人: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/issue'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'pull_request' && body.action === 'opened') {
     const pr = body.pull_request
@@ -202,7 +193,7 @@ PR作成者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/pr'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'pull_request' && body.action === 'edited') {
     const pr = body.pull_request
@@ -216,7 +207,7 @@ PR編集者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/pr'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'pull_request' && body.action === 'review_requested') {
     const pr = body.pull_request
@@ -234,7 +225,7 @@ PR編集者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/pr'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (event === 'pull_request_review' && body.action === 'submitted') {
     const pr = body.pull_request
@@ -249,7 +240,7 @@ PR編集者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/pr'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else if (
     event === 'pull_request_review_comment' &&
@@ -267,7 +258,7 @@ PR編集者: [${user.login}](${user.html_url})
 
 ---
 ` + content
-    await sendMessage(channelIDs['#t/S/l/pr'], text)
+    await sendMessage(channelIDs['#p/2/t/logs'], text)
     res.send('OK')
   } else {
     res.send('Other Action')
